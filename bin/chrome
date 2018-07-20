@@ -1,0 +1,4 @@
+#!/bin/bash
+
+#~/git/scheib/chromium-latest-linux/update.sh
+~/git/scheib/chromium-latest-linux/run.sh $*

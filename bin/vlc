@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+vlc --playlist ~/Music

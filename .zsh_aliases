@@ -1,0 +1,112 @@
+export PATH=~/.config/composer/vendor/bin:$PATH
+export PATH=~/scripts/bin:$PATH
+export PATH=~/bin:$PATH
+
+# Default API keys from the aur
+export google_api_key="AIzaSyDwr302FpOSkGRpLlUpPThNTDPbXcIn_FM"
+export google_default_client_id="413772536636.apps.googleusercontent.com"
+export google_default_client_secret="0ZChLK6AxeA3Isu96MkwqDR4"
+
+
+alias atom="atom-beta"
+alias ll="ls --color=auto -Flh"
+alias gstt="git status"
+
+# Bluetooth headphones
+alias blue="echo -e 'connect A0:E9:DB:30:06:E5' | bluetoothctl"
+alias gen-ssl="openssl req -nodes -newkey rsa:2048 -keyout priv.key -out cert.csr"
+
+alias curldump='curl -s -v -o/dev/null '
+alias clipy='xclip -sel clip <'
+alias gen-ssl="openssl req -nodes -newkey rsa:2048 -keyout priv.key -out cert.csr"
+
+# Jacksons SSH Servers
+alias s-jas='ssh server.jas-group.co.uk'
+alias s-jasdb='ssh db.jas-group.co.uk'
+alias s-jass='ssh staging.jas-group.co.uk'
+alias s-jasc='ssh channel.jas-group.co.uk'
+
+# Jacksons Backup servers
+alias s-b-jasdb='ssh backup.db.jas-group.co.uk'
+alias s-b-jas='ssh backup.server.jas-group.co.uk'
+
+# Magento stores
+alias m-jas='cd ~/git/magento/jacksons-art'
+
+alias phpstan='docker run -v $PWD:/app --rm phpstan/phpstan analyse /app/src --level 7'
+
+# Start geary with debug options
+alias startmail='geary -d --log-conversations --log-deserializer --log-network --log-replay-queue --log-serializer --log-periodic --log-folder-normalization'
+
+alias ytdownload='youtube-dl --audio-format mp3 -x'
+
+# Run applications with docker replacements
+
+yarn () {
+    tty=
+    tty -s && tty=--tty
+    docker run \
+        $tty \
+        --interactive \
+        --rm \
+        --user $(id -u):$(id -g) \
+        --volume /tmp:/tmp:rw \
+        --volume /home/chris:/home/chris:rw \
+        --volume $(pwd):/$(pwd) \
+        -w /$(pwd) \
+        local/yarn:latest $@
+}
+
+gulp () {
+    tty=
+    tty -s && tty=--tty
+    docker run \
+        $tty \
+        --interactive \
+        --rm \
+        --user $(id -u):$(id -g) \
+        --volume /tmp:/tmp:rw \
+        --volume /home/chris:/home/chris:rw \
+        --volume $(pwd):/$(pwd) \
+        -w /$(pwd) \
+        local/yarn:latest gulp $@
+}
+
+php () {
+    tty=
+    tty -s && tty=--tty
+    docker run \
+        $tty \
+        --rm \
+        --net=host \
+        -it \
+        --user $(id -u):$(id -g) \
+        --volume /usr/local/bin/symfony:/usr/local/bin/symfony:ro \
+        --volume /home/chris:/home/chris:ro \
+        --volume $(pwd):$(pwd) \
+        --workdir $(pwd) \
+        php:latest php "$@"
+}
+
+composer () {
+    tty=
+    tty -s && tty=--tty
+    docker run \
+        $tty \
+        --interactive \
+	--dns="10.10.1.1" \
+        --add-host='git.xigen.co.uk:10.10.1.19' \
+        --rm \
+        -v ~/.config/composer/auth.json:/tmp/auth.json:rw \
+	-v /var/run/docker.sock:/var/run/docker.sock \
+        --volume $SSH_AUTH_SOCK:/ssh-auth.sock \
+        --env SSH_AUTH_SOCK=/ssh-auth.sock \
+        --volume /etc/passwd:/etc/passwd:ro \
+        --volume /etc/group:/etc/group:ro \
+        --volume ~/.config/composer:/composer:rw \
+        --volume /tmp:/tmp:rw \
+        --volume /home/chris:/home/chris:rw \
+	--volume $(pwd):/$(pwd) \
+	-w /$(pwd) \
+        composer:latest -vvv "$@"
+}

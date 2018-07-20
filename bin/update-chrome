@@ -1,0 +1,6 @@
+#!/bin/bash
+
+killall chrome
+~/git/scheib/chromium-latest-linux/update.sh
+~/bin/chrome
+
