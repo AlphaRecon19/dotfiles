@@ -7,18 +7,21 @@ export google_api_key="AIzaSyDwr302FpOSkGRpLlUpPThNTDPbXcIn_FM"
 export google_default_client_id="413772536636.apps.googleusercontent.com"
 export google_default_client_secret="0ZChLK6AxeA3Isu96MkwqDR4"
 
-
 alias atom="atom-beta"
 alias ll="ls --color=auto -Flh"
 alias gstt="git status"
 
 # Bluetooth headphones
 alias blue="echo -e 'connect A0:E9:DB:30:06:E5' | bluetoothctl"
+
+# Generate new SSL in the current dir
 alias gen-ssl="openssl req -nodes -newkey rsa:2048 -keyout priv.key -out cert.csr"
 
+# Dump out the headers for a curl request
 alias curldump='curl -s -v -o/dev/null '
+
+# Copy a file to the clipboard
 alias clipy='xclip -sel clip <'
-alias gen-ssl="openssl req -nodes -newkey rsa:2048 -keyout priv.key -out cert.csr"
 
 # Jacksons SSH Servers
 alias s-jas='ssh server.jas-group.co.uk'
@@ -30,62 +33,47 @@ alias s-jasc='ssh channel.jas-group.co.uk'
 alias s-b-jasdb='ssh backup.db.jas-group.co.uk'
 alias s-b-jas='ssh backup.server.jas-group.co.uk'
 
-# Magento stores
-alias m-jas='cd ~/git/magento/jacksons-art'
-
-alias phpstan='docker run -v $PWD:/app --rm phpstan/phpstan analyse /app/src --level 7'
-
 # Start geary with debug options
 alias startmail='geary -d --log-conversations --log-deserializer --log-network --log-replay-queue --log-serializer --log-periodic --log-folder-normalization'
 
 alias ytdownload='youtube-dl --audio-format mp3 -x'
 
-# Run applications with docker replacements
+# Run applications with in docker containers
+alias phpstan='docker run -v $PWD:/app --rm phpstan/phpstan analyse /app/src --level 7'
 
 yarn () {
     tty=
     tty -s && tty=--tty
     docker run \
         $tty \
-        --interactive \
         --rm \
-        --user $(id -u):$(id -g) \
+        -it
+        --entrypoint /usr/local/bin/yarn \
         --volume /tmp:/tmp:rw \
         --volume /home/chris:/home/chris:rw \
         --volume $(pwd):/$(pwd) \
         -w /$(pwd) \
-        local/yarn:latest $@
+        local/node:latest $@
 }
 
 gulp () {
+    name="${PWD##*/}_gulp"
     tty=
     tty -s && tty=--tty
     docker run \
         $tty \
-        --interactive \
+        -it \
         --rm \
+        --init \
         --user $(id -u):$(id -g) \
+        --memory 256M \
+        --name $name \
+        --entrypoint /usr/local/bin/gulp \
         --volume /tmp:/tmp:rw \
         --volume /home/chris:/home/chris:rw \
         --volume $(pwd):/$(pwd) \
         -w /$(pwd) \
-        local/yarn:latest gulp $@
-}
-
-php () {
-    tty=
-    tty -s && tty=--tty
-    docker run \
-        $tty \
-        --rm \
-        --net=host \
-        -it \
-        --user $(id -u):$(id -g) \
-        --volume /usr/local/bin/symfony:/usr/local/bin/symfony:ro \
-        --volume /home/chris:/home/chris:ro \
-        --volume $(pwd):$(pwd) \
-        --workdir $(pwd) \
-        php:latest php "$@"
+        local/node:latest $@
 }
 
 composer () {
@@ -108,5 +96,6 @@ composer () {
         --volume /home/chris:/home/chris:rw \
 	--volume $(pwd):/$(pwd) \
 	-w /$(pwd) \
-        composer:latest -vvv "$@"
+        --user $(id -u):$(id -g) \
+        composer:latest -vvv $@
 }

@@ -20,10 +20,11 @@ RUN apk add --no-cache \
         curl \
         exif \
         fileinfo \
-        intl \
         gd \
+        intl \
         json \
         mbstring \
+        pcntl \
         pdo_mysql \
         posix \
         xml \
