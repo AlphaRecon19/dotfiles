@@ -1,4 +1,4 @@
-FROM local/desktop
+FROM alpharecon19/desktop
 
 COPY download.sh /home/chromium/
 
