@@ -1,0 +1,20 @@
+
+if [ -z "$1" ]; then
+  path='src/'
+else
+  path=$1
+fi
+
+name="${PWD##*/}_phpcs"
+tty=
+tty -s && tty=--tty
+docker run \
+    $tty \
+    --rm \
+    --init \
+    --name $name \
+    --user $(id -u):$(id -g) \
+    --volume /home/chris:/home/chris:ro \
+    --volume $(pwd):$(pwd) \
+    --workdir $(pwd) \
+    local/codesniffer:latest php /opt/phpcs.phar --standard=PSR2 --colors -pn $(pwd)/$path

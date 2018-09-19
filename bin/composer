@@ -1,0 +1,23 @@
+#!/bin/zsh
+
+tty=
+tty -s && tty=--tty
+docker run \
+    $tty \
+    --dns="10.10.1.1" \
+    --add-host='git.xigen.co.uk:10.10.1.19' \
+    --rm \
+    -it \
+    --init \
+    --env COMPOSER_MEMORY_LIMIT=-1 \
+    --entrypoint /usr/bin/composer \
+    --env SSH_AUTH_SOCK=/ssh-auth.sock \
+    --volume /etc/group:/etc/group:ro \
+    --volume /etc/passwd:/etc/passwd:ro \
+    --volume /home/chris:/home/chris:rw \
+    --volume /var/run/docker.sock:/var/run/docker.sock \
+    --volume $SSH_AUTH_SOCK:/ssh-auth.sock \
+    --volume $(pwd):/$(pwd) \
+    -w /$(pwd) \
+    --user $(id -u):$(id -g) \
+    local/php:latest -vvv $@

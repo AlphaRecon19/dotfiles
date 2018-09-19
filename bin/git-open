@@ -1,0 +1,30 @@
+#!/usr/bin/zsh
+
+if ! git rev-parse --is-inside-work-tree &>/dev/null; then
+  echo "Not a git repository." 1>&2
+  exit 1
+fi
+
+remote=$(git remote get-url origin)
+
+if [[ -z "$remote" ]]; then
+  echo "Git remote is not set" 1>&2
+  exit 1
+fi
+
+branch_name=$(git name-rev --name-only HEAD 2>/dev/null)
+
+url=$(echo $remote | sed -e "s/git\@//g")
+url=$(echo $url | sed -e 's/\.co\.uk:/\.co\.uk\//g')
+url=$(echo $url | sed -e 's/\.com:/\.com\//g')
+url=$(echo $url | sed -e 's/\.git//g')
+
+# echo $url
+
+if [ -z "$1" ]; then
+  xdg-open "http://$url"
+elif [ $1 = "-b" ] ; then
+  xdg-open "http://$url/tree/$branch_name"
+else
+  echo "Parameter $1 not found"
+fi

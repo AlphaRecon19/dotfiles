@@ -1,0 +1,4 @@
+#!/bin/zsh
+
+name="${PWD##*/}_server"
+docker rm -f $name > /dev/null 2>&1

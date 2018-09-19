@@ -1,0 +1,16 @@
+#!/bin/zsh
+
+tty=
+tty -s && tty=--tty
+docker run \
+    $tty \
+    --rm \
+    -it \
+    --init \
+    --user $(id -u):$(id -g) \
+    --volume /usr/local/bin/symfony:/usr/local/bin/symfony:ro \
+    --volume /home/chris:/home/chris:ro \
+    --volume /home/chris/.composer:/.composer:rw \
+    --volume $(pwd):$(pwd) \
+    --workdir $(pwd) \
+    local/php:latest php "$@"

@@ -1,0 +1,15 @@
+#!/bin/zsh
+
+tty=
+tty -s && tty=--tty
+docker run \
+    $tty \
+    -it \
+    --rm \
+    --init \
+    --user $(id -u):$(id -g) \
+    --volume /usr/local/bin/symfony:/usr/local/bin/symfony:ro \
+    --volume /home/chris:/home/chris:ro \
+    --volume $(pwd):$(pwd) \
+    --workdir $(pwd) \
+    local/php:7.3 php bin/console "$@"

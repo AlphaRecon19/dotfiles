@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+docker rm -f chrome
+
+
+docker container run --name chrome -it --rm --cap-add=SYS_ADMIN local/chrome:latest
+
+exit
+
+docker run -dt \
+    --name chrome \
+    -h chrome.local \
+    -p 5900:5900 \
+    local/chrome:latest

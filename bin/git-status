@@ -1,0 +1,62 @@
+#!/bin/zsh
+
+PHPCS_FILE_PATTERN="\.(php)$"
+
+function runphpcs ()
+{
+    name="${PWD##*/}_phpcs"
+    tty=
+    tty -s && tty=--tty
+    docker run \
+        $tty \
+        --rm \
+        -it \
+        --init \
+        --name $name \
+        --user $(id -u):$(id -g) \
+        --volume /home/chris:/home/chris:ro \
+        --volume /tmp/phpcs_flie_list.txt:/tmp/phpcs_flie_list.txt:ro \
+        --workdir $(pwd) \
+        local/codesniffer:latest php /opt/phpcs.phar -s --standard=PSR2 --colors -pn --file-list=/tmp/phpcs_flie_list.txt
+
+    return $?;
+}
+
+touch /tmp/phpcs_flie_list.txt
+
+# this is the magic:
+# retrieve all files in staging area that are added, modified or renamed
+# but no deletions etc
+FILES=$(git diff-index --name-only HEAD);
+
+if [ "$FILES" = "" ]; then
+    git status
+    exit 0
+fi
+
+# match files against whitelist
+FILES_TO_CHECK=""
+for FILE in $FILES
+do
+#    if [ ! -f "$FILE" ];
+#    then
+#       continue;
+#    fi
+
+    echo "$FILE" | egrep -q "$PHPCS_FILE_PATTERN"
+    RETVAL=$?
+    if [ "$RETVAL" -eq "0" ];
+    then
+        echo $FILE >> /tmp/phpcs_flie_list.txt
+    fi
+done
+
+runphpcs
+
+if [ $(find /tmp/phpcs_flie_list.txt -type f -size +1c > /dev/null 2>&1) ]; then
+  #runphpcs
+fi
+
+rm -rf /tmp/phpcs_flie_list.txt
+
+git status

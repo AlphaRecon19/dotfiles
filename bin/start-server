@@ -1,0 +1,44 @@
+#!/bin/zsh
+
+bin=bin/console
+nut="$(pwd)/app/nut"
+
+if [ -f $nut ]; then
+    export bin=app/nut
+fi
+
+# Check to make sure that the webserver bundle is installed
+bin/console server:run --help > /dev/null 2>&1
+if [ $? -eq 1 ]; then
+    echo "Unable to find the WebServer Bundle"
+    echo "Tying to automaticlly install the bundle"
+    echo ""
+    composer require symfony/web-server-bundle --dev
+fi
+
+# Stop any running containers for this project
+stop-server
+
+name="${PWD##*/}_server"
+
+tty=
+tty -s && tty=--tty
+docker run \
+    $tty \
+    -d \
+    --rm \
+    -it \
+    --name $name \
+    --init \
+    -p 8000 \
+    --user $(id -u):$(id -g) \
+    --volume /usr/local/bin/symfony:/usr/local/bin/symfony:ro \
+    --volume /home/chris:/home/chris:ro \
+    --volume $(pwd):$(pwd) \
+    --workdir $(pwd) \
+    local/php:latest php $bin server:run 0.0.0.0:8000 > /dev/null 2>&1
+
+port=$(docker inspect --format='{{(index (index .NetworkSettings.Ports "8000/tcp") 0).HostPort}}' $name)
+echo "";
+echo "Server started at http://0.0.0.0:"$port;
+chrome http://0.0.0.0:$port

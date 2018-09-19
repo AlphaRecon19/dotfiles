@@ -1,0 +1,20 @@
+#!/bin/zsh
+
+docker run -it \
+    --rm \
+    --init \
+    --net host \
+    --privileged \
+    --cpuset-cpus 0 \
+    --memory 512mb \
+    --volume /tmp/.X11-unix:/tmp/.X11-unix \
+    --volume /home/$(whoami):/home/$(whoami) \
+    --volume $(pwd):$(pwd) \
+    -e DISPLAY=$DISPLAY \
+    --user root:root \
+    --entrypoint='sudo -u $(id -g) atom' \
+    --entrypoint='bash' \
+    local/atom:latest
+exit;
+
+#jess/chrome
