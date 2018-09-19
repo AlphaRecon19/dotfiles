@@ -1,3 +1,6 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =1
+let g:netrw_dirhist_cnt =4
 let g:netrw_dirhist_1='/home/chris/.config/composer/auth.json'
+let g:netrw_dirhist_2='/home/chris/docker/images/php'
+let g:netrw_dirhist_3='/home/chris/.config/composer/auth.json'
+let g:netrw_dirhist_4='/home/chris/.config/composer/composer.json'
