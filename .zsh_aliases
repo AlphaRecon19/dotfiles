@@ -7,9 +7,9 @@ export google_api_key="AIzaSyDwr302FpOSkGRpLlUpPThNTDPbXcIn_FM"
 export google_default_client_id="413772536636.apps.googleusercontent.com"
 export google_default_client_secret="0ZChLK6AxeA3Isu96MkwqDR4"
 
-alias atom="atom-beta"
+alias atom="/usr/bin/atom"
 alias ll="ls --color=auto -Flh"
-alias gstt="git status"
+alias gstt="~/bin/git-status"
 
 # Bluetooth headphones
 alias blue="echo -e 'connect A0:E9:DB:30:06:E5' | bluetoothctl"
@@ -38,6 +38,8 @@ alias startmail='geary -d --log-conversations --log-deserializer --log-network -
 
 alias ytdownload='youtube-dl --audio-format mp3 -x'
 
+alias dc='docker-compose'
+
 # Run applications with in docker containers
 alias phpstan='docker run -v $PWD:/app --rm phpstan/phpstan analyse /app/src --level 7'
 
@@ -47,8 +49,29 @@ yarn () {
     docker run \
         $tty \
         --rm \
-        -it
+        --init \
+        -it \
         --entrypoint /usr/local/bin/yarn \
+        --volume /tmp:/tmp:rw \
+        --volume /home/chris:/home/chris:rw \
+        --volume $(pwd):/$(pwd) \
+        -w /$(pwd) \
+        local/node:latest $@
+}
+
+bower () {
+    name="${PWD##*/}_bower"
+    tty=
+    tty -s && tty=--tty
+    docker run \
+        $tty \
+        -it \
+        --rm \
+        --init \
+        --user $(id -u):$(id -g) \
+        --memory 256M \
+        --name $name \
+        --entrypoint /usr/local/bin/bower \
         --volume /tmp:/tmp:rw \
         --volume /home/chris:/home/chris:rw \
         --volume $(pwd):/$(pwd) \
@@ -76,26 +99,24 @@ gulp () {
         local/node:latest $@
 }
 
-composer () {
+phpcbf () {
+   if [ -z "$1" ]; then
+     path='src/'
+   else
+     path=$1
+   fi
+
+    name="${PWD##*/}_phpcbf"
     tty=
     tty -s && tty=--tty
     docker run \
         $tty \
-        --interactive \
-	--dns="10.10.1.1" \
-        --add-host='git.xigen.co.uk:10.10.1.19' \
         --rm \
-        -v ~/.config/composer/auth.json:/tmp/auth.json:rw \
-	-v /var/run/docker.sock:/var/run/docker.sock \
-        --volume $SSH_AUTH_SOCK:/ssh-auth.sock \
-        --env SSH_AUTH_SOCK=/ssh-auth.sock \
-        --volume /etc/passwd:/etc/passwd:ro \
-        --volume /etc/group:/etc/group:ro \
-        --volume ~/.config/composer:/composer:rw \
-        --volume /tmp:/tmp:rw \
-        --volume /home/chris:/home/chris:rw \
-	--volume $(pwd):/$(pwd) \
-	-w /$(pwd) \
+        --init \
+        --name $name \
         --user $(id -u):$(id -g) \
-        composer:latest -vvv $@
+        --volume /home/chris:/home/chris:ro \
+        --volume $(pwd):$(pwd) \
+        --workdir $(pwd) \
+        local/codesniffer:latest php /opt/phpcbf.phar --standard=PSR2 $(pwd)/$path
 }
