@@ -13,4 +13,4 @@ docker run \
     --volume /home/chris/.composer:/.composer:rw \
     --volume $(pwd):$(pwd) \
     --workdir $(pwd) \
-    local/php:7.3 php "$@"
+    local/php:7.1 php "$@"
