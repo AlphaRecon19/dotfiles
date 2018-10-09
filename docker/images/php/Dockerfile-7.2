@@ -1,4 +1,4 @@
-FROM php:7-cli-alpine3.7
+FROM php:7.2-cli-alpine3.7
 
 RUN apk add --no-cache --virtual .build-deps \
         autoconf \
@@ -13,8 +13,10 @@ RUN apk add --no-cache --virtual .build-deps \
         libmcrypt-dev \
         libpng-dev \
         libxml2-dev \
+        openldap \
         make \
         postfix \
+        openldap-dev \
     && apk add --no-cache \
         git \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
@@ -24,6 +26,7 @@ RUN apk add --no-cache --virtual .build-deps \
         gd \
         intl \
         json \
+        ldap \
         pdo_mysql \
         soap \
         zip \
