@@ -6,17 +6,18 @@ else
   path=$1
 fi
 
-
 name="${PWD##*/}_phpcbf"
 tty=
 tty -s && tty=--tty
+
 docker run \
     $tty \
     --rm \
+    -it \
     --init \
     --name $name \
     --user $(id -u):$(id -g) \
     --volume /home/chris:/home/chris:ro \
     --volume $(pwd):$(pwd) \
     --workdir $(pwd) \
-    local/codesniffer:latest php /opt/phpcbf.phar --standard=PSR2 --colors -pn $(pwd)/$path
+    local/codesniffer:latest php /opt/phpcbf.phar

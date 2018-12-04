@@ -14,10 +14,11 @@ docker run \
     --env SSH_AUTH_SOCK=/ssh-auth.sock \
     --volume /etc/group:/etc/group:ro \
     --volume /etc/passwd:/etc/passwd:ro \
-    --volume /home/chris:/home/chris:rw \
+    --volume $HOME:$HOME:ro \
+    --volume $HOME/.composer:/.composer:rw \
     --volume /var/run/docker.sock:/var/run/docker.sock \
     --volume $SSH_AUTH_SOCK:/ssh-auth.sock \
     --volume $(pwd):/$(pwd) \
     -w /$(pwd) \
     --user $(id -u):$(id -g) \
-    local/php:latest -vvv $@
+    xigen/php:cli-latest -vvv $@

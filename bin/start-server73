@@ -7,6 +7,11 @@ if [ -f $nut ]; then
     export bin=app/nut
 fi
 
+if [ -f 'app/cache' ]; then
+   export bin=app/console
+fi
+
+
 # Check to make sure that the webserver bundle is installed
 bin/console server:run --help > /dev/null 2>&1
 if [ $? -eq 1 ]; then
@@ -25,20 +30,21 @@ tty=
 tty -s && tty=--tty
 docker run \
     $tty \
-    -d \
-    --rm \
     -it \
     --name $name \
     --init \
-    -p 8000 \
+    --net host \
     --user $(id -u):$(id -g) \
-    --volume /usr/local/bin/symfony:/usr/local/bin/symfony:ro \
-    --volume /home/chris:/home/chris:ro \
+    --volume $HOME:$HOME:ro \
     --volume $(pwd):$(pwd) \
     --workdir $(pwd) \
-    local/php:7.3 php $bin server:run 0.0.0.0:8000 > /dev/null 2>&1
+    xigen/php:cli-7.2 php app/console server:start 0.0.0.0:8000
+
+
+sleep 111111
+exit;
 
 port=$(docker inspect --format='{{(index (index .NetworkSettings.Ports "8000/tcp") 0).HostPort}}' $name)
 echo "";
 echo "Server started at http://0.0.0.0:"$port;
-chrome http://0.0.0.0:$port
+firefox http://0.0.0.0:$port

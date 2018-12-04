@@ -7,10 +7,11 @@ docker run \
     --rm \
     -it \
     --init \
+    --net host \
     --user $(id -u):$(id -g) \
     --volume /usr/local/bin/symfony:/usr/local/bin/symfony:ro \
     --volume /home/chris:/home/chris:ro \
     --volume /home/chris/.composer:/.composer:rw \
     --volume $(pwd):$(pwd) \
     --workdir $(pwd) \
-    local/php:latest php "$@"
+    xigen/php:cli-latest php "$@"

@@ -10,4 +10,4 @@ docker run \
     --dns="8.8.8.8" \
     --volume $(pwd):/$(pwd) \
     --user $(id -u):$(id -g) \
-    local/youtube-dl:latest $@
+    alpharecon19/youtube-dl:latest $@

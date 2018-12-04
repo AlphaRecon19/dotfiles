@@ -1,5 +1,8 @@
 #!/bin/zsh
 
+git status
+exit;
+
 PHPCS_FILE_PATTERN="\.(php)$"
 
 function runphpcs ()

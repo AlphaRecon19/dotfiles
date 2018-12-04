@@ -8,9 +8,8 @@ docker run \
     -it \
     --init \
     --user $(id -u):$(id -g) \
-    --volume /usr/local/bin/symfony:/usr/local/bin/symfony:ro \
-    --volume /home/chris:/home/chris:ro \
-    --volume /home/chris/.composer:/.composer:rw \
+    --volume $HOME:$HOME:ro \
+    --volume $HOME/.composer:/.composer:rw \
     --volume $(pwd):$(pwd) \
     --workdir $(pwd) \
-    local/php:7.1 php "$@"
+    xigen/php:cli-7.1 php "$@"
