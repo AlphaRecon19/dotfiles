@@ -1,0 +1,32 @@
+#!/bin/zsh
+
+docker pull alpharecon19/chromium:latest
+
+
+# Allow connections
+xhost +
+
+docker stop chromium
+docker rm -f chromium
+docker run -it \
+    --name chromium \
+    --init \
+    --privileged \
+    --net host \
+    --cpuset-cpus="0,2" \
+    --memory 4g \
+    --shm-size 2048mb \
+    --restart on-failure \
+    --group-add $(getent group audio | cut -d: -f3) \
+    --volume /dev/snd:/dev/snd \
+    --volume /dev/dri:/dev/dri \
+    --volume /dev/shm:/dev/shm \
+    --volume /tmp/.X11-unix:/tmp/.X11-unix \
+    --volume /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket \
+    --volume /etc/localtime:/etc/timezone:ro \
+    --volume $HOME/Documents/user-data-dir:/home/chromium/.config/chromium \
+    --volume $HOME/Downloads/chromium:/home/chromium/Downloads:rw \
+    --volume $XAUTH:/home/chromium/.Xauthority \
+    -e DISPLAY=$DISPLAY \
+    -e "TZ=Europe\London" \
+    alpharecon19/chromium:latest
