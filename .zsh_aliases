@@ -10,9 +10,12 @@ export google_default_client_secret="0ZChLK6AxeA3Isu96MkwqDR4"
 alias atom="/usr/bin/atom"
 alias ll="ls --color=auto -Flh"
 alias gstt="~/bin/git-status"
+alias irc='irssi'
 
 # Bluetooth headphones
 alias blue="echo -e 'connect A0:E9:DB:30:06:E5' | bluetoothctl"
+
+alias blue="echo -e 'connect 00:16:94:33:43:92' | bluetoothctl"
 
 # Generate new SSL in the current dir
 alias gen-ssl="openssl req -nodes -newkey rsa:2048 -keyout priv.key -out cert.csr"
@@ -23,10 +26,26 @@ alias curldump='curl -s -v -o/dev/null '
 # Copy a file to the clipboard
 alias clipy='xclip -sel clip <'
 
+alias s-emarketer='ssh emarketer.xigen.co.uk'
+alias s-planner='ssh planner.xigen.co.uk'
+alias s-harrier='ssh harrier.xigen.co.uk'
+alias s-git='ssh git.xigen.co.uk'
+
+alias s-puffin='ssh puffin.xigenhosting.co.uk'
+alias s-bonus='ssh bonus.xigenhosting.co.uk'
+alias s-fairfieldcare='ssh fairfieldcare.xigenhosting.co.uk'
+alias s-magic='ssh magic.xigenhosting.co.uk'
+alias s-finch='ssh finch.xigenhosting.co.uk'
+alias s-merlin='ssh merlin.xigenhosting.co.uk'
+alias s-windowware='ssh windowware.xigenhosting.co.uk'
+alias s-magpie='ssh magpie.xigenhosting.co.uk'
+alias s-owl='ssh owl.xigenhosting.co.uk'
+
+alias s-jas-m2='ssh jas-m2.xigenhosting.co.uk'
 # Jacksons SSH Servers
-alias s-jas='ssh server.jas-group.co.uk'
-alias s-jasdb='ssh db.jas-group.co.uk'
-alias s-jass='ssh staging.jas-group.co.uk'
+alias s-jas='ssh jas.xigenhosting.co.uk'
+alias s-jasdb='ssh jasdb.xigenhosting.co.uk'
+alias s-jass='ssh jas-staging.xigenhosting.co.uk'
 alias s-jasc='ssh channel.jas-group.co.uk'
 
 # Jacksons Backup servers
@@ -56,7 +75,7 @@ yarn () {
         --volume /home/chris:/home/chris:rw \
         --volume $(pwd):/$(pwd) \
         -w /$(pwd) \
-        local/node:latest $@
+        xigen/node:latest $@
 }
 
 bower () {
@@ -72,6 +91,26 @@ bower () {
         --memory 256M \
         --name $name \
         --entrypoint /usr/local/bin/bower \
+        --volume /tmp:/tmp:rw \
+        --volume /home/chris:/home/chris:rw \
+        --volume $(pwd):/$(pwd) \
+        -w /$(pwd) \
+        local/node:latest $@
+}
+
+grunt () {
+    name="${PWD##*/}_grunt"
+    tty=
+    tty -s && tty=--tty
+    docker run \
+        $tty \
+        -it \
+        --rm \
+        --init \
+        --user $(id -u):$(id -g) \
+        --memory 256M \
+        --name $name \
+        --entrypoint /usr/local/bin/grunt \
         --volume /tmp:/tmp:rw \
         --volume /home/chris:/home/chris:rw \
         --volume $(pwd):/$(pwd) \
@@ -96,7 +135,7 @@ gulp () {
         --volume /home/chris:/home/chris:rw \
         --volume $(pwd):/$(pwd) \
         -w /$(pwd) \
-        local/node:latest $@
+        xigen/node:latest $@
 }
 
 phpcbf () {
